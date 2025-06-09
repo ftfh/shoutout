@@ -38,7 +38,27 @@ export const adminLoginSchema = z.object({
   password: z.string().min(1, 'Password is required'),
 });
 
-// Profile update schema
+// User profile update schema
+export const userProfileUpdateSchema = z.object({
+  firstName: z.string().min(1, 'First name is required').max(100).optional(),
+  lastName: z.string().min(1, 'Last name is required').max(100).optional(),
+  displayName: z.string()
+    .min(3, 'Display name must be at least 3 characters')
+    .max(50, 'Display name must be less than 50 characters')
+    .regex(/^[a-zA-Z0-9_]+$/, 'Display name can only contain letters, numbers, and underscores')
+    .optional(),
+  country: z.string().min(1, 'Country is required').optional(),
+});
+
+// User password change schema
+export const userPasswordChangeSchema = z.object({
+  currentPassword: z.string().min(1, 'Current password is required'),
+  newPassword: z.string()
+    .min(8, 'Password must be at least 8 characters')
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Password must contain at least one lowercase letter, one uppercase letter, and one number'),
+});
+
+// Profile update schema (generic)
 export const profileUpdateSchema = z.object({
   firstName: z.string().min(1).max(100).optional(),
   lastName: z.string().min(1).max(100).optional(),
@@ -92,6 +112,7 @@ export const creatorSearchSchema = z.object({
   minPrice: z.number().min(0).optional(),
   maxPrice: z.number().min(0).optional(),
   maxDeliveryTime: z.number().min(1).optional(),
+  sortBy: z.enum(['price_asc', 'price_desc', 'delivery_time', 'newest', 'rating']).optional(),
   page: z.number().min(1).default(1),
   limit: z.number().min(1).max(50).default(20),
 });
