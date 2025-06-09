@@ -58,7 +58,7 @@ export const userPasswordChangeSchema = z.object({
     .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Password must contain at least one lowercase letter, one uppercase letter, and one number'),
 });
 
-// Profile update schema (generic)
+// Profile update schema (generic for both users and creators)
 export const profileUpdateSchema = z.object({
   firstName: z.string().min(1).max(100).optional(),
   lastName: z.string().min(1).max(100).optional(),
