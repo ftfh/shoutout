@@ -6,7 +6,7 @@ import { getClientInfo } from '@/lib/utils/request';
 import { eq, desc, and, ilike } from 'drizzle-orm';
 
 // Get all withdrawals with search and pagination
-async function GET(request: AuthenticatedRequest) {
+async function getWithdrawalsHandler(request: AuthenticatedRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const page = Number(searchParams.get('page')) || 1;
@@ -76,4 +76,4 @@ async function GET(request: AuthenticatedRequest) {
   }
 }
 
-export { withAuth(GET, ['admin']) as GET };
+export const GET = withAuth(getWithdrawalsHandler, ['admin']);

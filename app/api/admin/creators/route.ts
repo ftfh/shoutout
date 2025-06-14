@@ -4,7 +4,7 @@ import { withAuth, AuthenticatedRequest } from '@/lib/auth/middleware';
 import { eq, ilike, desc, count, sum } from 'drizzle-orm';
 
 // Get all creators with search and pagination
-async function GET(request: AuthenticatedRequest) {
+async function getCreators(request: AuthenticatedRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const page = Number(searchParams.get('page')) || 1;
@@ -46,7 +46,7 @@ async function GET(request: AuthenticatedRequest) {
       .offset(offset);
 
     // Get order counts for each creator
-    const creatorIds = creatorList.map(c => c.id);
+    const creatorIds = creatorList.map((c: any) => c.id);
     const orderCounts = await db
       .select({
         creatorId: orders.creatorId,
@@ -58,8 +58,8 @@ async function GET(request: AuthenticatedRequest) {
       .groupBy(orders.creatorId);
 
     // Combine creator data with order stats
-    const creatorsWithStats = creatorList.map(creator => {
-      const stats = orderCounts.find(oc => oc.creatorId === creator.id);
+    const creatorsWithStats = creatorList.map((creator: any) => {
+      const stats = orderCounts.find((oc: any) => oc.creatorId === creator.id);
       return {
         ...creator,
         orderCount: stats?.orderCount || 0,
@@ -87,4 +87,4 @@ async function GET(request: AuthenticatedRequest) {
   }
 }
 
-export { withAuth(GET, ['admin']) as GET };
+export const GET = withAuth(getCreators, ['admin']);

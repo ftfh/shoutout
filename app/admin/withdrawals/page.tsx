@@ -184,7 +184,6 @@ export default function AdminWithdrawalsPage() {
                     <SelectValue placeholder="All Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Status</SelectItem>
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="completed">Completed</SelectItem>
                     <SelectItem value="rejected">Rejected</SelectItem>

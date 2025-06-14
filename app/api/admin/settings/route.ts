@@ -7,7 +7,7 @@ import { getClientInfo } from '@/lib/utils/request';
 import { eq } from 'drizzle-orm';
 
 // Get all site settings
-async function GET(request: AuthenticatedRequest) {
+async function getSiteSettings(request: AuthenticatedRequest) {
   try {
     const settings = await db
       .select({
@@ -36,7 +36,7 @@ async function GET(request: AuthenticatedRequest) {
 }
 
 // Create or update site setting
-async function PUT(request: AuthenticatedRequest) {
+async function updateSiteSetting(request: AuthenticatedRequest) {
   try {
     const body = await request.json();
     const { ipAddress, userAgent } = getClientInfo(request);
@@ -110,4 +110,5 @@ async function PUT(request: AuthenticatedRequest) {
   }
 }
 
-export { withAuth(GET, ['admin']) as GET, withAuth(PUT, ['admin']) as PUT };
+export const GET = withAuth(getSiteSettings, ['admin']);
+export const PUT = withAuth(updateSiteSetting, ['admin']);

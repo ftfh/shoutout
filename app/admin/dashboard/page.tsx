@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/contexts/auth-context';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -53,27 +53,35 @@ interface DashboardData {
 }
 
 export default function AdminDashboard() {
-  const { user, logout } = useAuth();
+  const { user, logout, loading: authLoading } = useAuth(); // Get authLoading state
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [pageLoading, setPageLoading] = useState(true); // For dashboard data loading specifically
   const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
+    // Wait for auth context to finish loading
+    if (authLoading) {
+      setPageLoading(true); // Indicate that the page is effectively loading due to auth check
+      return;
+    }
+
     if (user?.type === 'admin') {
-      loadDashboard();
+      loadDashboard(); // This will manage setPageLoading for API call
     } else {
+      // If auth is loaded and user is not admin, then redirect
       window.location.href = '/';
     }
-  }, [user]);
+  }, [user, authLoading]); // Add authLoading to dependency array
 
   const loadDashboard = async () => {
+    setPageLoading(true); // Set loading true before API call
     try {
       const response = await apiRequest('/api/admin/dashboard');
       setDashboard(response.dashboard);
     } catch (error: any) {
       toast.error('Failed to load dashboard data');
     } finally {
-      setLoading(false);
+      setPageLoading(false); // Set loading false after API call
     }
   };
 
@@ -96,8 +104,19 @@ export default function AdminDashboard() {
     }
   };
 
+  // Show a loading state if auth is resolving OR if user is admin and dashboard data is loading
+  if (authLoading || (user?.type === 'admin' && pageLoading)) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-slate-800 flex items-center justify-center">
+        <p className="text-white text-xl">Loading dashboard...</p>
+      </div>
+    );
+  }
+
+  // If auth is loaded, and user is NOT admin, the useEffect should have redirected.
+  // This is a fallback.
   if (!user || user.type !== 'admin') {
-    return null;
+    return null; // Or a "Redirecting..." message
   }
 
   return (
@@ -161,7 +180,7 @@ export default function AdminDashboard() {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
-            {loading ? (
+            {pageLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[...Array(8)].map((_, i) => (
                   <Card key={i} className="animate-pulse bg-gray-800 border-gray-700">

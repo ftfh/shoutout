@@ -4,7 +4,7 @@ import { withAuth, AuthenticatedRequest } from '@/lib/auth/middleware';
 import { eq, count, sum, desc, gte, and } from 'drizzle-orm';
 
 // Get admin dashboard stats
-async function GET(request: AuthenticatedRequest) {
+async function getDashboardStats(request: AuthenticatedRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const period = searchParams.get('period') || '30'; // days
@@ -118,7 +118,7 @@ async function GET(request: AuthenticatedRequest) {
         recentOrders,
       },
     });
-
+    
   } catch (error: any) {
     console.error('Get admin dashboard error:', error);
     return NextResponse.json(
@@ -128,4 +128,4 @@ async function GET(request: AuthenticatedRequest) {
   }
 }
 
-export { withAuth(GET, ['admin']) as GET };
+export const GET = withAuth(getDashboardStats, ['admin']);
